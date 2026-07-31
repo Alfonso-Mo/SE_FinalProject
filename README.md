@@ -11,6 +11,6 @@ rate them, join discussions, and give a separate score based on whether they thi
   - Create an account and log in 
 
 ## Team Members
-Alfonso Montelongo
-- Name
-- Name
+- Alfonso Montelongo
+- J Cuevas
+- Xavier G
