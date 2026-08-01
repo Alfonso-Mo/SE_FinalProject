@@ -13,4 +13,4 @@ rate them, join discussions, and give a separate score based on whether they thi
 ## Team Members
 - Alfonso Montelongo
 - Jose Cuevas
-- Xavier G
+- Xavier Garcia
