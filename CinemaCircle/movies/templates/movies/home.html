@@ -2,4 +2,7 @@
  <!--If The user is authenticated then-->
  {% if user.is_authenticated %}
  <p>Hi, {{user.username }}</p>
- 
+ <form method = post action = {%url 'logout' %}>
+    {csrf_token }
+
+ </form>
