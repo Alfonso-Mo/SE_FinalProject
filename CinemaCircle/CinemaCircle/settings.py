@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5!w0m7z3il1^cummv1eelu_7md_cz7$y%q5dvb!oa=#5rjd@zk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -117,3 +117,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CSRF Security Exception for GitHub Codespaces
+CSRF_TRUSTED_ORIGINS = [
+    'https://localhost:8000',
+    'https://potential-dollop-wp6pv4v65j63v974-8000.app.github.dev',
+]
