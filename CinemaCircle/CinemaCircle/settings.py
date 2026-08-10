@@ -128,3 +128,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://localhost:8000',
     'https://potential-dollop-wp6pv4v65j63v974-8000.app.github.dev',
 ]
+
+#Redirect users to homepage after logiin in 
+LOGIN_REDIRECT_URL = 'home'
+
+#Redirects user to homepage when log out
+LOGOUT_REDIRECT_URL = 'login'
