@@ -115,3 +115,92 @@ footer {
     padding: 25px;
     color: #888888;
 }
+
+.nav-user {
+    color: #ffffff;
+    font-size: 16px;
+    align-self: center;
+}
+
+.logout-form {
+    display: inline;
+}
+
+.logout-form button {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+.auth-section {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.auth-section h2 {
+    font-size: 34px;
+    margin-bottom: 12px;
+}
+
+.auth-section > p {
+    color: #bbbbbb;
+    font-size: 17px;
+    margin-bottom: 28px;
+}
+
+.auth-form {
+    text-align: left;
+    padding: 28px;
+    background-color: #1d1d1d;
+    border: 1px solid #333333;
+    border-radius: 10px;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #dddddd;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 11px;
+    margin-bottom: 16px;
+    background-color: #111111;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.auth-form button {
+    margin-top: 8px;
+}
+
+.form-errors {
+    list-style: none;
+    color: #f87171;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.help-text {
+    color: #888888;
+    font-size: 13px;
+    margin: -8px 0 16px;
+    line-height: 1.4;
+}
+
+.help-text ul {
+    margin-left: 18px;
+}
+
+.auth-switch {
+    margin-top: 20px;
+    color: #bbbbbb;
+}
+
+.auth-switch a {
+    color: #f87171;
+}
