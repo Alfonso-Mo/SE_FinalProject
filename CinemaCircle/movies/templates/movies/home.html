@@ -1,6 +1,8 @@
 <!DOCTYPE html> 
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>CinemaCircle - Home</title>
   <style>
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -8,61 +10,107 @@
       color: #f5f5f5;
       margin: 0;
       padding: 40px;
-      
-      /* --- Centering CSS Starts Here --- */
+    }
+    .header {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh; /* Makes the body take up the full height of the screen */
-      box-sizing: border-box; /* Ensures the 40px padding doesn't add extra scrollbars */
-      text-align: center; /* Centers the text itself */
-      /* --- Centering CSS Ends Here --- */
+      margin-bottom: 40px;
     }
     h1 {
       color: #e50914;
-      font-size: 2.2rem;
-      margin-bottom: 20px;
+      margin: 0;
     }
-    a {
-      color: #f5f5f5;
-      background-color: #e50914;
-      padding: 10px 20px;
-      border-radius: 4px;
-      text-decoration: none;
-      display: inline-block;
-      font-weight: bold;
-    }
-    a:hover {
-      background-color: #b0060f;
+    .user-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
     form button {
-      padding: 10px 20px;
       background-color: #333;
-      color: #fff;
+      color: white;
+      padding: 10px 20px;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
       font-weight: bold;
+      cursor: pointer;
     }
     form button:hover {
       background-color: #555;
     }
-    p {
+    /* Movie Grid */
+    .movie-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .movie-card {
+      background-color: #222;
+      border-radius: 8px;
+      padding: 15px;
+      width: 220px;
+      text-align: center;
+    }
+    .movie-card img {
+      width: 100%;
+      border-radius: 4px;
+    }
+    .movie-title {
       font-size: 1.1rem;
+      margin: 10px 0;
+      min-height: 40px;
+    }
+    .trailer-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #e50914;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .trailer-btn:hover {
+      background-color: #b0060f;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to CinemaCircle</h1>
-  {% if user.is_authenticated %}
-  <p>Hi, {{ user.username }}</p>
-  <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Log Out</button>
-  </form>
-  {% else %}
-  <a href="{% url 'login' %}">Log In</a>
-  {% endif %}
+
+  <div class="header">
+    <h1>CinemaCircle</h1>
+    {% if user.is_authenticated %}
+      <div class="user-controls">
+        <span>Hi, {{ user.username }}</span>
+        <!-- Kept your secure POST method logout form -->
+        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+          {% csrf_token %}
+          <button type="submit">Log Out</button>
+        </form>
+      </div>
+    {% else %}
+      <a href="{% url 'login' %}" style="color: white; background-color: #e50914; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Log In</a>
+    {% endif %}
+  </div>
+
+  <h2>Now Playing in Theaters</h2>
+  
+  <div class="movie-grid">
+    <!-- Loop through the API data passed from views.py -->
+    {% for movie in movies %}
+      <div class="movie-card">
+        <!-- TMDB requires this base URL prefix to load images properly -->
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+        <div class="movie-title">{{ movie.title }}</div>
+        
+        <a href="#" class="trailer-btn">Watch Trailer</a>
+      </div>
+    {% empty %}
+      <p>No movies found. Double-check that your API key is correctly pasted in views.py!</p>
+    {% endfor %}
+  </div>
+
 </body>
-</html> <!--Used ai to fix code so that the sign in could be in the middle -->
+</html>
