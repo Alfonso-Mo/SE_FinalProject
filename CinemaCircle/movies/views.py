@@ -8,12 +8,12 @@ def home(request):
     # The TMDB endpoint for movies currently playing in theaters
     url = f"https://api.themoviedb.org/3/movie/now_playing?api_key={api_key}&language=en-US&page=1"
     
-    # Make the request to TMDB and convert the response to a Python dictionary
+    # Makes the request to TMDB and convert the response to a Python dictionary
     response = requests.get(url)
     data = response.json()
     
     # Extract just the list of movies
     movies = data.get('results', [])
     
-    # Send the movie list to your home.html template
+    # Sends the movie list to your home.html template
     return render(request, 'movies/home.html', {'movies': movies})
