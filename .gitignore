@@ -13,3 +13,6 @@ virt
 # Data bases
 db.sqlite3
 mydb.py
+
+# Mac OS
+.DS_Store
