@@ -105,7 +105,7 @@
         <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
         <div class="movie-title">{{ movie.title }}</div>
         
-        <a href="#" class="trailer-btn">Watch Trailer</a>
+        <a href="{% url 'movie_detail' movie.id %}" class="trailer-btn">Watch Trailer</a>
       </div>
     {% empty %}
       <p>No movies found. Double-check that your API key is correctly pasted in views.py!</p>
