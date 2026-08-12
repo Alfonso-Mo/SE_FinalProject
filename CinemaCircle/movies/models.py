@@ -11,7 +11,7 @@ class Movie(models.Model):
     release_date = models.DateField(null=True, blank=True)
 
     class Meta:
-        ordering = ["title"]
+        ordering = ["title"] #testing
 
     def __str__(self):
         return self.title
