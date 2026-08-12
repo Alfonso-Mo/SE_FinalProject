@@ -16,3 +16,6 @@ mydb.py
 
 # Mac OS
 .DS_Store
+
+# Environment variables / secrets
+.env 
