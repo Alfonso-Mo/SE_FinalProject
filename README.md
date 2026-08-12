@@ -11,7 +11,7 @@ rate them, join discussions, and give a separate score based on whether they thi
   - Create an account and log in
 
 ## User stories
-  - User stories can be found under CinemaCircle/movies in a file called User_Stories.pdf
+  - User stories can be found in the file called User_Stories.pdf
 
 ## Team Members
 - Alfonso Montelongo
