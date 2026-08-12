@@ -4,8 +4,10 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def home(request):
     return render(request, "movies/homepage.html")
 
@@ -32,7 +34,7 @@ class SignUpView(View):
 
 class UserLoginView(LoginView):
     template_name = "movies/login.html"
-    redirect_authenticated_user = True
+    # redirect_authenticated_user = True
 
 
 class UserLogoutView(LogoutView):
