@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Comment, Movie, Rating, WorthWatching
+from .models import Comment, CommentVote, Movie, Rating, WorthWatching
 
 
 @admin.register(Movie)
@@ -23,5 +23,12 @@ class WorthWatchingAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("user", "movie", "created_at")
+    list_display = ("user", "movie", "parent", "created_at")
     search_fields = ("body", "user__username", "movie__title")
+    list_filter = ("created_at",)
+
+
+@admin.register(CommentVote)
+class CommentVoteAdmin(admin.ModelAdmin):
+    list_display = ("user", "comment", "value", "updated_at")
+    list_filter = ("value",)
