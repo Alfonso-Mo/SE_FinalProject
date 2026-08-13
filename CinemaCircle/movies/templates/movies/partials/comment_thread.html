@@ -1,0 +1,68 @@
+<li class="comment-item" id="comment-{{ comment.id }}">
+  <div class="comment-card">
+    <div class="vote-column">
+      <form method="post" action="{% url 'vote_comment' movie_id comment.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="value" value="1">
+        <button
+          type="submit"
+          class="vote-btn {% if comment.user_vote == 1 %}active-up{% endif %}"
+          aria-label="Upvote"
+        >▲</button>
+      </form>
+      <span class="vote-score">{{ comment.score|default:0 }}</span>
+      <form method="post" action="{% url 'vote_comment' movie_id comment.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="value" value="-1">
+        <button
+          type="submit"
+          class="vote-btn {% if comment.user_vote == -1 %}active-down{% endif %}"
+          aria-label="Downvote"
+        >▼</button>
+      </form>
+    </div>
+
+    <div class="comment-body">
+      <div class="comment-meta">
+        <strong>{{ comment.user.username }}</strong>
+        <span>{{ comment.created_at|timesince }} ago</span>
+      </div>
+      <p class="comment-text">{{ comment.body|linebreaksbr }}</p>
+
+      <details class="reply-details">
+        <summary>Reply</summary>
+        <form
+          method="post"
+          action="{% url 'reply_comment' movie_id comment.id %}"
+          class="comment-form reply-form"
+        >
+          {% csrf_token %}
+          <textarea
+            name="body"
+            rows="3"
+            class="comment-textarea"
+            placeholder="Reply to {{ comment.user.username }}..."
+            required
+          ></textarea>
+          <button type="submit" class="comment-submit">Post reply</button>
+        </form>
+      </details>
+    </div>
+  </div>
+
+  {% if comment.child_nodes %}
+    {% if depth < 6 %}
+      <ul class="comment-list depth-{{ depth|add:1 }}">
+        {% for child in comment.child_nodes %}
+          {% include "movies/partials/comment_thread.html" with comment=child movie_id=movie_id depth=depth|add:1 %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <ul class="comment-list depth-max">
+        {% for child in comment.child_nodes %}
+          {% include "movies/partials/comment_thread.html" with comment=child movie_id=movie_id depth=depth %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+</li>
