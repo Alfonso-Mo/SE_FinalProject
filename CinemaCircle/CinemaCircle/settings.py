@@ -126,3 +126,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Required for YouTube embeds (Error 153 if same-origin / no-referrer).
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"

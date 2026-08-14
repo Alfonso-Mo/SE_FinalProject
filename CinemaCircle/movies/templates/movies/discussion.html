@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discussion: {{ movie.title }} - CinemaCircle</title>
+  <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="{% static 'movies/images/logo.png' %}" alt="CinemaCircle logo">
+      <h1>CinemaCircle</h1>
+    </div>
+    <nav>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'discussions_list' %}">Discussions</a>
+      <a href="{% url 'top_rated' %}">Top Rated</a>
+      <a href="{% url 'lowest_rated' %}">Lowest Rated</a>
+      <a href="{% url 'movie_detail' movie_id %}">Trailer</a>
+      {% if user.is_authenticated %}
+        <span class="nav-user">{{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+          {% csrf_token %}
+          <button type="submit">Log out</button>
+        </form>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="discussion-page">
+    <a href="{% url 'movie_detail' movie_id %}" class="back-link">&larr; Back to trailer</a>
+
+    <section class="film-header">
+      {% if db_movie.poster_url %}
+        <img
+          class="film-poster"
+          src="{{ db_movie.poster_url }}"
+          alt="{{ db_movie.title }} poster"
+        >
+      {% endif %}
+      <div class="film-header-copy">
+        <p class="eyebrow">Discussion</p>
+        <h2>{{ db_movie.title }}</h2>
+        {% if db_movie.release_date %}
+          <p class="film-meta">Released {{ db_movie.release_date }}</p>
+        {% endif %}
+        <p class="overview">{{ db_movie.overview|truncatewords:60 }}</p>
+        <p class="comment-count">{{ comment_count }} comment{{ comment_count|pluralize }}</p>
+      </div>
+    </section>
+
+    <section class="discussion-compose">
+      <h3>Add a comment</h3>
+      <form method="post" action="{% url 'movie_discussion' movie_id %}" class="comment-form">
+        {% csrf_token %}
+        {{ form.body }}
+        {% if form.body.errors %}
+          <ul class="form-errors">
+            {% for error in form.body.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <button type="submit" class="comment-submit">Post comment</button>
+      </form>
+    </section>
+
+    <section class="discussion-thread">
+      <h3>Thread</h3>
+      {% if comment_tree %}
+        <ul class="comment-list depth-0">
+          {% for comment in comment_tree %}
+            {% include "movies/partials/comment_thread.html" with comment=comment movie_id=movie_id depth=0 %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty-note">Be the first to discuss this movie.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

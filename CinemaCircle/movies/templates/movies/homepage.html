@@ -1,114 +1,322 @@
+
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>CinemaCircle</title>
 
-    <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+    <link
+        rel="stylesheet"
+        href="{% static 'movies/css/style.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'movies/css/homepage.css' %}"
+    >
 </head>
 
-<body>
+
+<body class="home-page">
+
+
+    <!-- Header -->
 
     <header>
-        <div class="logo">
-            <img src="{% static 'movies/images/logo.png' %}" alt="CinemaCircle logo">
-            <h1>CinemaCircle</h1>
+
+        <div class="header-container">
+
+            <!-- Logo -->
+
+            <a href="{% url 'home' %}" class="logo">
+
+                <img
+                    src="{% static 'movies/images/logo.png' %}"
+                    alt="CinemaCircle logo"
+                >
+
+                <span>CinemaCircle</span>
+
+            </a>
+
+
+            <!-- Navigation -->
+
+            <nav>
+
+                <a
+                    href="{% url 'home' %}"
+                    class="active"
+                >
+                    Home
+                </a>
+
+                <a href="#">
+                    Movies
+                </a>
+
+                <a href="{% url 'discussions_list' %}">
+                    Discussions
+                </a>
+
+                <a href="{% url 'top_rated' %}">
+                    Top Rated
+                </a>
+
+                <a href="{% url 'lowest_rated' %}">
+                    Lowest Rated
+                </a>
+
+
+                {% if user.is_authenticated %}
+
+                    <span class="nav-user">
+                        {{ user.username }}
+                    </span>
+
+                    <form
+                        method="post"
+                        action="{% url 'logout' %}"
+                        class="logout-form"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="logout-button"
+                        >
+                            Log out
+                        </button>
+
+                    </form>
+
+
+                {% else %}
+
+                    <a href="{% url 'login' %}">
+                        Log in
+                    </a>
+
+                    <a
+                        href="{% url 'signup' %}"
+                        class="signup-button"
+                    >
+                        Sign up
+                    </a>
+
+                {% endif %}
+
+            </nav>
+
         </div>
 
-        <nav>
-            <a href="{% url 'home' %}">Home</a>
-            <a href="#">Movies</a>
-            <a href="#">Discussions</a>
-            <a href="#">Top Rated</a>
-            <a href="#">Lowest Rated</a>
-            {% if user.is_authenticated %}
-                <span class="nav-user">{{ user.username }}</span>
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit">Log out</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Log in</a>
-                <a href="{% url 'signup' %}">Sign up</a>
-            {% endif %}
-        </nav>
     </header>
 
+
+
+    <!-- Main Content -->
+
     <main>
-        
-        <!-- === NEW SEARCH SECTION === -->
+        <!-- Movie Search -->
+
         <section>
-            <div style="display: flex; justify-content: center; margin-bottom: 20px; margin-top: 20px;">
-                <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 10px;">
-                    <input type="text" name="q" value="{{ search_query|default_if_none:'' }}" 
-                           placeholder="Search for a movie..." 
-                           style="padding: 12px 16px; width: 400px; border-radius: 6px; border: none; outline: none; font-size: 1rem; background-color: #2a2a2a; color: #fff;">
-                    
-                    <button type="submit" 
-                            style="padding: 12px 24px; border-radius: 6px; background-color: #e50914; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem;">
+
+            <div style="display: flex; justify-content: center; margin-bottom: 30px; margin-top: 20px;">
+
+                <form
+                    method="GET"
+                    action="{% url 'home' %}"
+                    style="display: flex; gap: 10px;"
+                >
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ search_query|default_if_none:'' }}"
+                        placeholder="Search for a movie..."
+                        style="padding: 12px 16px; width: 400px; border-radius: 6px; border: none; outline: none; font-size: 1rem; background-color: #2a2a2a; color: #fff;"
+                    >
+
+                    <button
+                        type="submit"
+                        style="padding: 12px 24px; border-radius: 6px; background-color: #e50914; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem;"
+                    >
                         Search
                     </button>
-                    
+
                     {% if search_query %}
-                        <a href="{% url 'home' %}" 
-                           style="padding: 12px 24px; border-radius: 6px; background-color: #555; color: white; text-decoration: none; font-weight: bold; font-size: 1rem; display: flex; align-items: center;">
+
+                        <a
+                            href="{% url 'home' %}"
+                            style="padding: 12px 24px; border-radius: 6px; background-color: #555; color: white; text-decoration: none; font-weight: bold; font-size: 1rem; display: flex; align-items: center;"
+                        >
                             Clear
                         </a>
+
                     {% endif %}
+
                 </form>
+
             </div>
 
-            <div style="text-align: center; margin-bottom: 30px;">
-                {% if search_query %}
-                    <h2>Search Results for "{{ search_query }}"</h2>
-                {% else %}
-                    <h2>Movies Currently in Theaters</h2>
-                    <p>View current movies, rate them, and discuss them with other users.</p>
-                {% endif %}
-            </div>
         </section>
-        <!-- ========================== -->
 
-        <section class="movie-grid">
+        <!-- Movies Currently Playing -->
 
-            {% for movie in movies %}
-        
-                <div class="movie-card">
-        
-                    {% if movie.poster_url %}
-                        <img
-                            src="{{ movie.poster_url }}"
-                            alt="{{ movie.title }} poster"
-                        >
+        <section class="movies-section">
+
+            <div class="section-heading">
+
+                <div>
+                                    
+                    {% if search_query %}
+                    
+                        <span class="section-label">
+                            SEARCH RESULTS
+                        </span>
+
+                        <h2>
+                            Results for "{{ search_query }}"
+                        </h2>
+
+                    {% else %}
+
+                        <span class="section-label">
+                            IN THEATERS
+                        </span>
+
+                        <h2>
+                            Movies Currently Playing
+                        </h2>
+
                     {% endif %}
-        
-                    <h3>{{ movie.title }}</h3>
-        
-                    <p>
-                        Release Date: {{ movie.release_date }}
-                    </p>
-        
-                    <a href="{% url 'movie_detail' movie.id %}"><button type="button">View Trailer</button></a>
-        
+                    
                 </div>
-        
-            {% empty %}
-        
-                <p>No movies were found.</p>
-        
-            {% endfor %}
-        
+              
+            </div>
+            
+            
+            <!-- Movie Grid -->
+
+            <div class="movie-grid">
+
+
+                {% for movie in movies %}
+
+                    <article class="movie-card">
+
+
+                        <!-- Clickable Poster -->
+
+                        <a
+                            href="{% url 'movie_detail' movie.id %}"
+                            class="poster-link"
+                            aria-label="View {{ movie.title }}"
+                        >
+
+                            <div class="poster-container">
+
+                                {% if movie.poster_url %}
+
+                                    <img
+                                        src="{{ movie.poster_url }}"
+                                        alt="{{ movie.title }} poster"
+                                    >
+
+                                {% else %}
+
+                                    <div class="poster-placeholder">
+                                        No poster available
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </a>
+
+
+                        <!-- Movie Information -->
+
+                        <div class="movie-info">
+
+                            <h3>
+                                {{ movie.title }}
+                            </h3>
+
+                            <p class="release-date">
+                                {{ movie.release_date }}
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No movies were found.
+                        </h3>
+
+                        <p>
+                            Movies currently playing will appear here.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
         </section>
+
+
     </main>
 
+
+
+    <!-- Footer -->
+
     <footer>
-        <p>CinemaCircle Software Engineering Project</p>
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+
+                <img
+                    src="{% static 'movies/images/logo.png' %}"
+                    alt="CinemaCircle logo"
+                >
+
+                <span>
+                    CinemaCircle
+                </span>
+
+            </div>
+
+            <p>
+                CinemaCircle Software Engineering Project
+            </p>
+
+        </div>
+
     </footer>
 
+
 </body>
-</html> <!--Transfered code form codespace so it can have a search bar-->
-<!--I added the search bar but github says theres going to be conflicst -->
+
+</html>
