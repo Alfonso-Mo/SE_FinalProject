@@ -26,10 +26,10 @@
 
 .home-page header {
     position: sticky;
-
     top: 0;
-
     z-index: 100;
+
+    padding:0;
 
     background: rgba(15, 15, 15, 0.92);
 
@@ -61,21 +61,21 @@
 
 .home-page .logo {
     display: flex;
-
     align-items: center;
-
     gap: 12px;
 
     color: #ffffff;
-
     text-decoration: none;
+    
+    margin-left: -200px;
+    transform: translateX(-100px);
 }
 
 
 .home-page .logo img {
-    width: 42px;
+    width: 50px;
 
-    height: 42px;
+    height: 50px;
 
     object-fit: contain;
 }
@@ -476,14 +476,13 @@
 }
 
 
-.home-page .view-all::after {
-    content: "â†’";
+/* .home-page .view-all::after {
 
     font-size: 17px;
 
     transition:
         transform 0.25s ease;
-}
+} */
 
 
 .home-page .view-all:hover {
