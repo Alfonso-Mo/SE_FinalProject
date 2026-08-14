@@ -17,6 +17,7 @@ from .forms import CommentForm, MovieScoresForm
 from .models import Comment, CommentVote, Movie, Rating, WorthWatching
 
 
+
 def _tmdb_headers():
     token = settings.TMDB_API_TOKEN
     if not token:
@@ -95,9 +96,11 @@ def build_comment_tree(comments, user):
     return by_parent.get(None, [])
 
 
-def fetch_now_playing_movies():
+def fetch_now_playing_movies(search_query=None):
     nowplaying_url = "https://api.themoviedb.org/3/movie/now_playing"
+    search_url = "https://api.themoviedb.org/3/search/movie"
     configuration_url = "https://api.themoviedb.org/3/configuration"
+    
     headers = _tmdb_headers()
     movies = []
 
@@ -106,34 +109,55 @@ def fetch_now_playing_movies():
         headers=headers,
         timeout=10,
     )
-    nowplaying_response = requests.get(
-        nowplaying_url,
-        headers=headers,
-        params={
-            "region": "US",
-            "language": "en-US",
-        },
-        timeout=10,
-    )
+
+
+    if search_query:
+        movies_response = requests.get(
+            search_url,
+            headers=headers,
+            params={
+                "query": search_query,
+                "language": "en-US",
+                "page": 1,
+                "include_adult": "false",
+            },
+            timeout=10,
+        )
+    else:
+        movies_response = requests.get(
+            nowplaying_url,
+            headers=headers,
+            params={
+                "region": "US",
+                "language": "en-US",
+                "page": 1,
+            },
+            timeout=10,
+        )
+
 
     if (
         configuration_response.status_code == 200
-        and nowplaying_response.status_code == 200
+        and movies_response.status_code == 200
     ):
         configuration_data = configuration_response.json()
-        nowplaying_data = nowplaying_response.json()
+        movies_data = movies_response.json()
 
         base_url = configuration_data["images"]["secure_base_url"]
         poster_sizes = configuration_data["images"]["poster_sizes"]
         poster_size = "w500" if "w500" in poster_sizes else poster_sizes[-1]
 
-        for movie in nowplaying_data["results"]:
-            if movie["original_language"] != "en":
+        for movie in movies_data.get("results", []):
+            
+            # Keep only English-language movies
+            if movie.get("original_language") != "en":
                 continue
 
-            if movie["poster_path"] is not None:
+            if movie.get("poster_path"):
                 movie["poster_url"] = (
-                    base_url + poster_size + movie["poster_path"]
+                    base_url
+                    + poster_size
+                    + movie.get("poster_path")
                 )
             else:
                 movie["poster_url"] = None
@@ -145,25 +169,40 @@ def fetch_now_playing_movies():
 
 @login_required
 def home(request):
+    search_query = request.GET.get("q", "").strip()
+
+    movies = fetch_now_playing_movies(
+        search_query if search_query else None
+    )
+
     return render(
         request,
         "movies/homepage.html",
-        {"movies": fetch_now_playing_movies()},
+        {
+            "movies": movies,
+            "search_query": search_query,
+        },
     )
 
 
 @login_required
 def discussions_list(request):
     movies = fetch_now_playing_movies()
+
     api_ids = [str(movie["id"]) for movie in movies]
+
     comment_counts = {
         row["api_id"]: row["comment_total"]
         for row in Movie.objects.filter(api_id__in=api_ids)
         .annotate(comment_total=Count("comments"))
         .values("api_id", "comment_total")
     }
+
     for movie in movies:
-        movie["comment_count"] = comment_counts.get(str(movie["id"]), 0)
+        movie["comment_count"] = comment_counts.get(
+            str(movie["id"]),
+            0
+        )
 
     return render(
         request,
@@ -199,6 +238,8 @@ class UserLoginView(LoginView):
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy("home")
 
+
+# --- WATCH TRAILER FEATURE ---
 
 @login_required
 def movie_detail(request, movie_id):
