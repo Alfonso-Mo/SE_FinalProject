@@ -39,13 +39,39 @@
     </header>
 
     <main>
+        
+        <!-- === NEW SEARCH SECTION === -->
         <section>
-            <h2>Movies Currently in Theaters</h2>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px; margin-top: 20px;">
+                <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 10px;">
+                    <input type="text" name="q" value="{{ search_query|default_if_none:'' }}" 
+                           placeholder="Search for a movie..." 
+                           style="padding: 12px 16px; width: 400px; border-radius: 6px; border: none; outline: none; font-size: 1rem; background-color: #2a2a2a; color: #fff;">
+                    
+                    <button type="submit" 
+                            style="padding: 12px 24px; border-radius: 6px; background-color: #e50914; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                        Search
+                    </button>
+                    
+                    {% if search_query %}
+                        <a href="{% url 'home' %}" 
+                           style="padding: 12px 24px; border-radius: 6px; background-color: #555; color: white; text-decoration: none; font-weight: bold; font-size: 1rem; display: flex; align-items: center;">
+                            Clear
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
 
-            <p>
-                View current movies, rate them, and discuss them with other users.
-            </p>
+            <div style="text-align: center; margin-bottom: 30px;">
+                {% if search_query %}
+                    <h2>Search Results for "{{ search_query }}"</h2>
+                {% else %}
+                    <h2>Movies Currently in Theaters</h2>
+                    <p>View current movies, rate them, and discuss them with other users.</p>
+                {% endif %}
+            </div>
         </section>
+        <!-- ========================== -->
 
         <section class="movie-grid">
 

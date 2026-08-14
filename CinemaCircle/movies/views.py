@@ -11,8 +11,11 @@ from django.views import View
 
 @login_required
 def home(request):
+    # 1. Check if there is a search query in the URL
+    search_query = request.GET.get('q')
 
     nowplaying_url = "https://api.themoviedb.org/3/movie/now_playing"
+    search_url = "https://api.themoviedb.org/3/search/movie"
     configuration_url = "https://api.themoviedb.org/3/configuration"
 
     # HARDCODED TMDB TOKEN
@@ -30,24 +33,38 @@ def home(request):
         timeout=10
     )
 
-    # Get movies currently playing
-    nowplaying_response = requests.get(
-        nowplaying_url,
-        headers=headers,
-        params={
-            "region": "US",
-            "language": "en-US"
-        },
-        timeout=10
-    )
+    # 2. If the user searched, use the Search API. Otherwise, get Now Playing.
+    if search_query:
+        movies_response = requests.get(
+            search_url,
+            headers=headers,
+            params={
+                "query": search_query,
+                "language": "en-US",
+                "page": 1,
+                "include_adult": "false"
+            },
+            timeout=10
+        )
+    else:
+        movies_response = requests.get(
+            nowplaying_url,
+            headers=headers,
+            params={
+                "region": "US",
+                "language": "en-US",
+                "page": 1
+            },
+            timeout=10
+        )
 
     if (
         configuration_response.status_code == 200
-        and nowplaying_response.status_code == 200
+        and movies_response.status_code == 200
     ):
 
         configuration_data = configuration_response.json()
-        nowplaying_data = nowplaying_response.json()
+        movies_data = movies_response.json()
 
         base_url = configuration_data["images"]["secure_base_url"]
         poster_sizes = configuration_data["images"]["poster_sizes"]
@@ -58,27 +75,31 @@ def home(request):
         else:
             poster_size = poster_sizes[-1]
 
-        for movie in nowplaying_data["results"]:
-
-            # Keep only English-language movies if you still want that filter
-            if movie["original_language"] != "en":
+        for movie in movies_data.get("results", []):
+            
+            # Keep only English-language movies
+            if movie.get("original_language") != "en":
                 continue
 
-            if movie["poster_path"] is not None:
+            if movie.get("poster_path"):
                 movie["poster_url"] = (
                     base_url
                     + poster_size
-                    + movie["poster_path"]
+                    + movie.get("poster_path")
                 )
             else:
                 movie["poster_url"] = None
 
             movies.append(movie)
 
+    # 3. Pass the search_query back to the template so we can display it
     return render(
         request,
         "movies/homepage.html",
-        {"movies": movies}
+        {
+            "movies": movies,
+            "search_query": search_query
+        }
     )
 
 
@@ -110,7 +131,7 @@ class UserLogoutView(LogoutView):
     next_page = reverse_lazy("home")
 
 
-# --- NEW WATCH TRAILER FEATURE ---
+# --- WATCH TRAILER FEATURE ---
 
 @login_required
 def movie_detail(request, movie_id):
@@ -143,4 +164,4 @@ def movie_detail(request, movie_id):
         'movie': movie_data,
         'trailer_key': trailer_key
     }
-    return render(request, 'movies/movie_detail.html', context)
+    return render(request, 'movies/movie_detail.html', context) #added code from codespace so we can search 
