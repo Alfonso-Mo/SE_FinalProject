@@ -28,4 +28,5 @@ urlpatterns = [
         views.vote_comment,
         name="vote_comment",
     ),
+    path("profile/edit/", views.edit_profile, name="edit_profile"),
 ]

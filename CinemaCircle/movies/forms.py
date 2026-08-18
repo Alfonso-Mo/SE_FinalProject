@@ -1,6 +1,6 @@
 from django import forms
-
-from .models import Comment
+from django.contrib.auth.models import User
+from .models import Comment, UserProfile
 
 SCORE_CHOICES = [(i, str(i)) for i in range(1, 11)]
 
@@ -34,3 +34,17 @@ class MovieScoresForm(forms.Form):
         label="Worth watching",
         widget=forms.Select(attrs={"class": "score-select"}),
     )
+
+# --- Profile forms so we can have profile editing ---
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_picture']
