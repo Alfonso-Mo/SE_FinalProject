@@ -3,6 +3,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum
 
+from django.db import models
+from django.contrib.auth.models import User
+
 
 class Movie(models.Model):
     api_id = models.CharField(max_length=64, unique=True)
@@ -149,3 +152,11 @@ class CommentVote(models.Model):
 
     def __str__(self):
         return f"{self.user} voted {self.value} on comment {self.comment_id}"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username

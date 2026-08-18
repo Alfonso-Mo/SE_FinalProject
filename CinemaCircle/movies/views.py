@@ -13,8 +13,12 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.decorators.http import require_POST
 
+
 from .forms import CommentForm, MovieScoresForm
 from .models import Comment, CommentVote, Movie, Rating, WorthWatching
+
+from .forms import CommentForm, MovieScoresForm, ProfileUpdateForm, UserUpdateForm
+from .models import Comment, CommentVote, Movie, Rating, UserProfile, WorthWatching
 
 
 
@@ -476,3 +480,25 @@ def vote_comment(request, movie_id, comment_id):
         reverse("movie_discussion", args=[movie_id])
         + f"#comment-{comment.id}"
     )
+
+@login_required
+def edit_profile(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('edit_profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+    return render(request, 'movies/edit_profile.html', context)

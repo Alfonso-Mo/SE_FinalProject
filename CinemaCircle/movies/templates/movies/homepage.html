@@ -83,6 +83,11 @@
                         {{ user.username }}
                     </span>
 
+                    <!-- Added Edit Profile Link Here -->
+                    <a href="{% url 'edit_profile' %}">
+                        Edit Profile
+                    </a>
+
                     <form
                         method="post"
                         action="{% url 'logout' %}"
