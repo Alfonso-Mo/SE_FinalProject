@@ -624,3 +624,138 @@ footer {
         padding-left: 10px;
     }
 }
+
+/* Edit Profile Page */
+
+/* Profile picture area */
+.profile-picture-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    margin-bottom: 20px;
+    padding-bottom: 25px;
+
+    border-bottom: 1px solid #333333;
+}
+
+
+/* Actual uploaded profile picture */
+.profile-picture {
+    width: 120px;
+    height: 120px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 3px solid #444444;
+}
+
+
+/* Circle shown when the user has no picture */
+.profile-picture-placeholder {
+    width: 120px;
+    height: 120px;
+
+    border-radius: 50%;
+
+    background-color: #333333;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 42px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+
+/* Each username/email/bio section */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* Labels above fields */
+.form-field label {
+    color: #dddddd;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/* Username and email boxes */
+.form-field input {
+    width: 100%;
+
+    padding: 12px;
+
+    background-color: #141414;
+    color: #ffffff;
+
+    border: 1px solid #444444;
+    border-radius: 6px;
+
+    font-size: 15px;
+}
+
+
+/* Bio textbox */
+.form-field textarea {
+    width: 100%;
+    min-height: 120px;
+
+    padding: 12px;
+
+    background-color: #141414;
+    color: #ffffff;
+
+    border: 1px solid #444444;
+    border-radius: 6px;
+
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+
+    resize: vertical;
+}
+
+
+/* Highlight fields when clicking on them */
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: #e50914;
+}
+
+
+/* Profile picture file chooser */
+.profile-picture-section input[type="file"] {
+    color: #bbbbbb;
+    font-size: 14px;
+}
+
+
+/* The "Choose File" button */
+.profile-picture-section input[type="file"]::file-selector-button {
+    padding: 9px 14px;
+
+    margin-right: 10px;
+
+    background-color: #333333;
+    color: #ffffff;
+
+    border: 1px solid #555555;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+.profile-picture-section input[type="file"]::file-selector-button:hover {
+    background-color: #444444;
+}

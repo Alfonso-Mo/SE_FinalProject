@@ -14,8 +14,20 @@ virt
 db.sqlite3
 mydb.py
 
+
 # Mac OS
 .DS_Store
 
+
 # Environment variables / secrets
 .env 
+
+
+# Python cache files
+__pycache__/
+*.pyc
+
+
+# User uploaded media
+media/
+profiles/

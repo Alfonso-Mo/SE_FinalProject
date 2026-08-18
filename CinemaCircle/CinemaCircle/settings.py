@@ -127,5 +127,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Uploaded media files, such as profile pictures
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 # Required for YouTube embeds (Error 153 if same-origin / no-referrer).
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"

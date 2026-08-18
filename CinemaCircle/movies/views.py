@@ -101,10 +101,11 @@ def build_comment_tree(comments, user):
 
 
 def fetch_now_playing_movies(search_query=None):
+
     nowplaying_url = "https://api.themoviedb.org/3/movie/now_playing"
     search_url = "https://api.themoviedb.org/3/search/movie"
     configuration_url = "https://api.themoviedb.org/3/configuration"
-    
+
     headers = _tmdb_headers()
     movies = []
 
@@ -114,59 +115,73 @@ def fetch_now_playing_movies(search_query=None):
         timeout=10,
     )
 
+    if configuration_response.status_code != 200:
+        return movies
 
-    if search_query:
-        movies_response = requests.get(
-            search_url,
-            headers=headers,
-            params={
-                "query": search_query,
-                "language": "en-US",
-                "page": 1,
-                "include_adult": "false",
-            },
-            timeout=10,
-        )
-    else:
-        movies_response = requests.get(
-            nowplaying_url,
-            headers=headers,
-            params={
-                "region": "US",
-                "language": "en-US",
-                "page": 1,
-            },
-            timeout=10,
-        )
+    configuration_data = configuration_response.json()
+
+    base_url = configuration_data["images"]["secure_base_url"]
+    poster_sizes = configuration_data["images"]["poster_sizes"]
+    poster_size = "w500" if "w500" in poster_sizes else poster_sizes[-1]
 
 
-    if (
-        configuration_response.status_code == 200
-        and movies_response.status_code == 200
-    ):
-        configuration_data = configuration_response.json()
+    # Fetch pages 1, 2, and 3
+    for page in range(1, 4):
+
+        if search_query:
+
+            movies_response = requests.get(
+                search_url,
+                headers=headers,
+                params={
+                    "query": search_query,
+                    "language": "en-US",
+                    "page": page,
+                    "include_adult": "false",
+                },
+                timeout=10,
+            )
+
+        else:
+
+            movies_response = requests.get(
+                nowplaying_url,
+                headers=headers,
+                params={
+                    "region": "US",
+                    "language": "en-US",
+                    "page": page,
+                },
+                timeout=10,
+            )
+
+
+        if movies_response.status_code != 200:
+            continue
+
         movies_data = movies_response.json()
 
-        base_url = configuration_data["images"]["secure_base_url"]
-        poster_sizes = configuration_data["images"]["poster_sizes"]
-        poster_size = "w500" if "w500" in poster_sizes else poster_sizes[-1]
 
         for movie in movies_data.get("results", []):
-            
+
             # Keep only English-language movies
             if movie.get("original_language") != "en":
                 continue
 
             if movie.get("poster_path"):
+
                 movie["poster_url"] = (
                     base_url
                     + poster_size
                     + movie.get("poster_path")
                 )
+
             else:
+
                 movie["poster_url"] = None
 
             movies.append(movie)
+
 
     return movies
 
