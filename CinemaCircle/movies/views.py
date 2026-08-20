@@ -185,14 +185,107 @@ def fetch_now_playing_movies(search_query=None):
 
     return movies
 
+def fetch_now_playing_page(page=1):
+
+    nowplaying_url = "https://api.themoviedb.org/3/movie/now_playing"
+
+    headers = _tmdb_headers()
+
+    movies = []
+
+    # Each CinemaCircle page will contain 2 TMDB pages
+    tmdb_start_page = ((page - 1) * 2) + 1
+
+    tmdb_pages = [
+        tmdb_start_page,
+        tmdb_start_page + 1,
+    ]
+
+    total_tmdb_pages = 1
+
+
+    for tmdb_page in tmdb_pages:
+
+        response = requests.get(
+            nowplaying_url,
+            headers=headers,
+            params={
+                "region": "US",
+                "language": "en-US",
+                "page": tmdb_page,
+            },
+            timeout=10,
+        )
+
+
+        if response.status_code != 200:
+            continue
+
+
+        data = response.json()
+
+        total_tmdb_pages = data.get(
+            "total_pages",
+            1
+        )
+
+
+        for movie in data.get("results", []):
+
+            # Keep only movies originally in English
+            if movie.get("original_language") != "en":
+                continue
+
+
+            if movie.get("poster_path"):
+
+                movie["poster_url"] = _poster_url_from_path(
+                    movie.get("poster_path")
+                )
+
+            else:
+
+                movie["poster_url"] = None
+
+
+            movies.append(movie)
+
+
+    # Since we show 2 TMDB pages at once,
+    # CinemaCircle needs about half as many pages
+    total_pages = (total_tmdb_pages + 1) // 2
+
+    return movies, total_pages
+
 
 @login_required
 def home(request):
     search_query = request.GET.get("q", "").strip()
 
-    movies = fetch_now_playing_movies(
-        search_query if search_query else None
+
+    # If the user searches, show the search results.
+    # Otherwise, only show 12 currently-playing movies on Home.
+    if search_query:
+
+        movies = fetch_now_playing_movies(search_query)
+
+    else:
+
+        movies = fetch_now_playing_movies()[:12]
+
+
+    # Get the 6 highest-rated movies from CinemaCircle users.
+    top_rated_movies = _rated_movies_queryset("-avg_rating")[:6]
+
+
+    # Get 6 movies that already have discussions/comments.
+    discussion_movies = (
+        Movie.objects
+        .annotate(comment_count=Count("comments"))
+        .filter(comment_count__gt=0)
+        .order_by("-comment_count", "title")[:6]
     )
+
 
     return render(
         request,
@@ -200,9 +293,41 @@ def home(request):
         {
             "movies": movies,
             "search_query": search_query,
+            "top_rated_movies": top_rated_movies,
+            "discussion_movies": discussion_movies,
         },
     )
 
+@login_required
+def movies_list(request):
+
+    try:
+
+        page = int(request.GET.get("page", 1))
+
+    except ValueError:
+
+        page = 1
+
+
+    if page < 1:
+        page = 1
+
+
+    movies, total_pages = fetch_now_playing_page(page)
+
+
+    return render(
+        request,
+        "movies/movies_list.html",
+        {
+            "movies": movies,
+            "current_page": page,
+            "total_pages": total_pages,
+            "previous_page": page - 1,
+            "next_page": page + 1,
+        },
+    )
 
 @login_required
 def discussions_list(request):

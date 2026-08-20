@@ -35,95 +35,100 @@
 
         <div class="header-container">
 
-            <!-- Logo -->
+    <!-- Logo -->
 
-            <a href="{% url 'home' %}" class="logo">
+    <a href="{% url 'home' %}" class="logo">
 
-                <img
-                    src="{% static 'movies/images/logo.png' %}"
-                    alt="CinemaCircle logo"
-                >
+        <img
+            src="{% static 'movies/images/logo.png' %}"
+            alt="CinemaCircle logo"
+        >
 
-                <span>CinemaCircle</span>
+        <span>CinemaCircle</span>
 
+    </a>
+
+
+    <!-- Main Navigation -->
+
+    <nav class="main-nav">
+
+        <a
+            href="{% url 'home' %}"
+            class="active"
+        >
+            Home
+        </a>
+
+        <a href="{% url 'currently_playing' %}">
+            Currently Playing
+        </a>
+
+        <a href="{% url 'discussions_list' %}">
+            Discussions
+        </a>
+
+        <a href="{% url 'top_rated' %}">
+            Top Rated
+        </a>
+
+        <a href="{% url 'lowest_rated' %}">
+            Lowest Rated
+        </a>
+
+    </nav>
+
+
+    <!-- Account Navigation -->
+
+    <div class="account-nav">
+
+        {% if user.is_authenticated %}
+
+            <span class="nav-user">
+                {{ user.username }}
+            </span>
+
+            <a href="{% url 'edit_profile' %}">
+                Edit Profile
             </a>
 
+            <form
+                method="post"
+                action="{% url 'logout' %}"
+                class="logout-form"
+            >
 
-            <!-- Navigation -->
+                {% csrf_token %}
 
-            <nav>
-
-                <a
-                    href="{% url 'home' %}"
-                    class="active"
+                <button
+                    type="submit"
+                    class="logout-button"
                 >
-                    Home
-                </a>
+                    Log out
+                </button>
 
-                <a href="#">
-                    Movies
-                </a>
+            </form>
 
-                <a href="{% url 'discussions_list' %}">
-                    Discussions
-                </a>
+        {% else %}
 
-                <a href="{% url 'top_rated' %}">
-                    Top Rated
-                </a>
+            <a href="{% url 'login' %}">
+                Log in
+            </a>
 
-                <a href="{% url 'lowest_rated' %}">
-                    Lowest Rated
-                </a>
+            <a
+                href="{% url 'signup' %}"
+                class="signup-button"
+            >
+                Sign up
+            </a>
 
+        {% endif %}
 
-                {% if user.is_authenticated %}
-
-                    <span class="nav-user">
-                        {{ user.username }}
-                    </span>
-
-                    <!-- Added Edit Profile Link Here -->
-                    <a href="{% url 'edit_profile' %}">
-                        Edit Profile
-                    </a>
-
-                    <form
-                        method="post"
-                        action="{% url 'logout' %}"
-                        class="logout-form"
-                    >
-
-                        {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="logout-button"
-                        >
-                            Log out
-                        </button>
-
-                    </form>
+    </div>
 
 
-                {% else %}
-
-                    <a href="{% url 'login' %}">
-                        Log in
-                    </a>
-
-                    <a
-                        href="{% url 'signup' %}"
-                        class="signup-button"
-                    >
-                        Sign up
-                    </a>
-
-                {% endif %}
-
-            </nav>
-
-        </div>
+</div>
 
     </header>
 
@@ -208,6 +213,17 @@
                     
                 </div>
               
+                {% if not search_query %}
+
+                <a
+                    href="{% url 'currently_playing' %}"
+                    class="view-all"
+                >
+                    View All →
+                </a>
+            
+                {% endif %}
+
             </div>
             
             
@@ -288,6 +304,209 @@
             </div>
 
         </section>
+
+        {% if not search_query %}
+
+                    <!-- Top Rated Movies -->
+
+        <section class="movies-section home-extra-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        COMMUNITY FAVORITES
+                    </span>
+
+                    <h2>
+                        Top Rated on CinemaCircle
+                    </h2>
+
+                </div>
+
+                <a
+                    href="{% url 'top_rated' %}"
+                    class="view-all"
+                >
+                    View All →
+                </a>
+
+            </div>
+
+
+            <div class="movie-grid">
+
+                {% for movie in top_rated_movies %}
+
+                    <article class="movie-card">
+
+                        <a
+                            href="{% url 'movie_detail' movie.api_id %}"
+                            class="poster-link"
+                            aria-label="View {{ movie.title }}"
+                        >
+
+                            <div class="poster-container">
+
+                                {% if movie.poster_url %}
+
+                                    <img
+                                        src="{{ movie.poster_url }}"
+                                        alt="{{ movie.title }} poster"
+                                    >
+
+                                {% else %}
+
+                                    <div class="poster-placeholder">
+                                        No poster available
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="movie-info">
+
+                            <h3>
+                                {{ movie.title }}
+                            </h3>
+
+                            <p class="home-rating">
+                                {{ movie.avg_rating|floatformat:1 }}/10
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No ratings yet.
+                        </h3>
+
+                        <p>
+                            Rated movies will appear here.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Active Discussions -->
+
+        <section class="movies-section home-extra-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        COMMUNITY
+                    </span>
+
+                    <h2>
+                        Active Discussions
+                    </h2>
+
+                </div>
+
+                <a
+                    href="{% url 'discussions_list' %}"
+                    class="view-all"
+                >
+                    View All →
+                </a>
+
+            </div>
+
+
+            <div class="movie-grid">
+
+                {% for movie in discussion_movies %}
+
+                    <article class="movie-card">
+
+                        <a
+                            href="{% url 'movie_discussion' movie.api_id %}"
+                            class="poster-link"
+                            aria-label="Discuss {{ movie.title }}"
+                        >
+
+                            <div class="poster-container">
+
+                                {% if movie.poster_url %}
+
+                                    <img
+                                        src="{{ movie.poster_url }}"
+                                        alt="{{ movie.title }} poster"
+                                    >
+
+                                {% else %}
+
+                                    <div class="poster-placeholder">
+                                        No poster available
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="movie-info">
+
+                            <h3>
+                                {{ movie.title }}
+                            </h3>
+
+                            <p class="home-comment-count">
+                                {{ movie.comment_count }}
+                                {% if movie.comment_count == 1 %}
+                                    comment
+                                {% else %}
+                                    comments
+                                {% endif %}
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <div class="empty-state">
+
+                        <h3>
+                            No active discussions yet.
+                        </h3>
+
+                        <p>
+                            Discussions will appear here once people start commenting.
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% endif %}
 
 
     </main>
